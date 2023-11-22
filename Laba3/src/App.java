@@ -12,13 +12,22 @@ public class App {
 
     private static int countSentencesWithDuplicates() {
         
-        StringBuilder text = new StringBuilder("Text input here. It can can contain multiple sentences.");
-        String[] sentences = text.toString().split("\\.");
+        StringBuilder text = new StringBuilder("Text input input here. It can can contain multiple sentences.");
+        List<StringBuilder> sentences = new ArrayList<>();
+        int start = 0;
+        for (int i = 0; i < text.length(); i++) {
+          char currentChar = text.charAt(i);
+          if (currentChar == '.' || currentChar == '?' || currentChar == '!') {
+                StringBuilder sentence = new StringBuilder(text.substring(start, i + 1));
+                sentences.add(sentence);
+                start = i + 1;
+            }
+        }
 
         int count = 0;
 
-        for (String sentence : sentences) {
-            if (hasDuplicates(sentence.trim())) {
+        for (StringBuilder sentence : sentences) {
+            if (hasDuplicates(removeTrailingSpaces(sentence))) {
                 count++;
             }
         }
@@ -26,13 +35,32 @@ public class App {
         return count;
     }
 
-    private static boolean hasDuplicates(String sentence) {
-        String[] words = sentence.split("\\s+");
+    private static StringBuilder removeTrailingSpaces(StringBuilder input) {
+        
+        while (input.length() > 0 && Character.isWhitespace(input.charAt(input.length() - 1))) {
+            input.deleteCharAt(input.length() - 1);
+        }
+        return input;
+    }
+
+    private static boolean hasDuplicates(StringBuilder sentence) {
+        
+        List<StringBuilder> words = new ArrayList<>();
+        int start = 0;
+        for (int i = 0; i < sentence.length(); i++) {
+          char currentChar = sentence.charAt(i);
+          if (currentChar == ' ') {
+                StringBuilder word = new StringBuilder(sentence.substring(start, i + 1));
+                words.add(word);
+                start = i + 1;
+            }
+        }
 
         Map<String, Integer> wordCountMap = new HashMap<>();
 
-        for (String word : words) {
-            wordCountMap.put(word, wordCountMap.getOrDefault(word, 0) + 1);
+        for (StringBuilder word : words) {
+            String wordString = word.toString(); 
+            wordCountMap.put(wordString, wordCountMap.getOrDefault(wordString, 0) + 1);
         }
 
         for (int count : wordCountMap.values()) {
